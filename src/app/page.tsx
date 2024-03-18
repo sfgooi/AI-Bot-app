@@ -1,6 +1,7 @@
 "use client";
-import Chat from "./components/Chat";
-import Slider from "./components/Slider";
+
+import Chat from "@/app/components/Chat";
+import Slider from "@/app/components/Slider";
 
 export default function Home() {
   return (

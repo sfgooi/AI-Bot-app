@@ -31,7 +31,9 @@ const Login = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    videoRef.current?.play();
+    if (videoRef.current) {
+      videoRef.current.play();
+    }
   }, []);
 
   const {
@@ -88,8 +90,9 @@ const Login = () => {
           autoPlay
           muted
           loop
+          playsInline
           ref={videoRef}
-          className="absolute z-[-1] w-full h-full object-cover filter blur-sm contrast-100"
+          className="absolute z-[-1] w-full h-full object-cover"
         >
           <source src="/videos/registerVideos.mp4" type="video/mp4" />
         </video>
@@ -99,13 +102,13 @@ const Login = () => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <Paper
-          className="p-8 w-[80vw] h-[50vh] sm:w-[50vw] md:w-[35vw]"
+          className="p-8 w-[80vw] sm:w-[50vw] md:w-[35vw] md:max-w-[450px]"
           elevation={4}
         >
           <Typography className="text-center" variant={"h5"} sx={{ m: "30px" }}>
             {isAuthMode ? "新規登録" : "ログイン"}
           </Typography>
-          <div className="flex flex-col gap-8 pt-8 pb-4">
+          <div className="flex flex-col gap-8 pt-4 pb-4">
             <TextField
               placeholder="Email*"
               type="email"
@@ -146,7 +149,7 @@ const Login = () => {
               </span>
             )}
           </div>
-          <Box mt={4}>
+          <Box mt={2}>
             <Button
               className="justify-center hover:bg-blue-700 hover:text-white"
               type="submit"
@@ -156,7 +159,7 @@ const Login = () => {
             >
               {isAuthMode ? "新規登録" : "ログイン"}
             </Button>
-            <Typography marginTop={3} variant="caption" display="block">
+            <Typography marginTop={2} variant="caption" display="block">
               <Button
                 className="p-0"
                 onClick={() => {

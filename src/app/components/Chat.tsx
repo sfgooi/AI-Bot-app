@@ -10,7 +10,7 @@ import {
   serverTimestamp,
   where,
 } from "firebase/firestore";
-import Textarea from '@mui/joy/Textarea';
+import Textarea from "@mui/joy/Textarea";
 import LoadingIcons from "react-loading-icons";
 import React, {
   ChangeEvent,
@@ -124,6 +124,12 @@ const Chat = () => {
     setInput("");
     setIsLoading(true);
 
+    const element = scrollDiv.current;
+    element?.scrollTo({
+      top: element.scrollHeight,
+      behavior: "smooth",
+    });
+
     // OpenAIからの返信
     const gpt3Response = await openAi.chat.completions.create({
       messages: [{ role: "user", content: input }],
@@ -132,6 +138,11 @@ const Chat = () => {
 
     setIsLoading(false);
 
+    element?.scrollTo({
+      top: element.scrollHeight,
+      behavior: "smooth",
+    });
+
     const botResponse = gpt3Response.choices[0].message.content;
     await addDoc(messageCollectionRef, {
       text: botResponse,
@@ -139,13 +150,11 @@ const Chat = () => {
       createdAt: serverTimestamp(),
     });
 
-    const element = scrollDiv.current;
     element?.scrollTo({
       top: element.scrollHeight,
       behavior: "smooth",
     });
   }, [input, selectedRoom, openAi]);
-
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
@@ -170,78 +179,76 @@ const Chat = () => {
       {({ open }) => (
         <>
           <div className="h-full flex flex-col">
-            {selectedRoomName && (
-              <div>
-                <div className="bg-custom-green w-full fixed z-20 py-4 pl-4 pr-4">
-                  <div className="flex justify-between">
-                    <h1
-                      style={{ fontSize: "1.35rem" }}
-                      className="text-center text-white font-semibold truncate"
+            <div>
+              <div className="bg-custom-green w-full fixed z-20 py-4 pl-4 pr-4">
+                <div className="flex justify-between">
+                  <h1
+                    style={{ fontSize: "1.35rem" }}
+                    className="text-center text-white font-semibold truncate"
+                  >
+                    {selectedRoomName ?? "※ルーム未選択"}
+                  </h1>
+                  <div className="flex items-center gap-4 md:hidden">
+                    <div
+                      onClick={handleLogout}
+                      className="flex items-center gap-6 cursor-pointer text-slate-100"
                     >
-                      {selectedRoomName}
-                    </h1>
-                    <div className="flex items-center gap-4 md:hidden">
-                      <div
-                        onClick={handleLogout}
-                        className="flex items-center gap-6 cursor-pointer text-slate-100"
-                      >
-                        <FiLogOut />
-                      </div>
-                      <Disclosure.Button>
-                        <IoIosArrowUp
-                          size={20}
-                          color="#fff"
-                          className={`${
-                            open
-                              ? "rotate-180 transform flex duration-300"
-                              : "rotate-0 duration-300"
-                          }`}
-                        />
-                      </Disclosure.Button>
-                      <div
-                        onClick={() => (userId ? addNewRoom(userId) : null)}
-                        className="pr-2 md:none"
-                      >
-                        <span className="text-white">
-                          <IoAddSharp size={22} />
-                        </span>
-                      </div>
+                      <FiLogOut />
+                    </div>
+                    <Disclosure.Button>
+                      <IoIosArrowUp
+                        size={20}
+                        color="#fff"
+                        className={`${
+                          open
+                            ? "rotate-180 transform flex duration-300"
+                            : "rotate-0 duration-300"
+                        }`}
+                      />
+                    </Disclosure.Button>
+                    <div
+                      onClick={() => (userId ? addNewRoom(userId) : null)}
+                      className="pr-2 md:none"
+                    >
+                      <span className="text-white">
+                        <IoAddSharp size={22} />
+                      </span>
                     </div>
                   </div>
                 </div>
-                <Disclosure.Panel className="mt-[64.4px]">
-                  <div className="h-full">
-                    <ul
-                      style={{ zIndex: "5" }}
-                      className="w-full absolute overflow-y-auto flex flex-col"
-                    >
-                      {rooms
-                        .slice()
-                        .sort((a, b) => {
-                          // createdAtが存在し、Timestampオブジェクトであることを確認
-                          const aSeconds = a.createdAt?.seconds ?? 0;
-                          const bSeconds = b.createdAt?.seconds ?? 0;
-                          return bSeconds - aSeconds;
-                        })
-                        .map((room, index) => (
-                          <li
-                            style={{
-                              animationDelay: `${index * 0.1}s`, // 各liタグのアニメーション開始を遅延
-                            }}
-                            key={room.id}
-                            onClick={() => selectRoom(room.id, room.name)}
-                            className="bg-blue-500 text-center md:text-left cursor-pointer border-b p-4 text-slate-100 hover:bg-blue-500 duration-150 truncate fadeInUp"
-                          >
-                            {room.name}
-                          </li>
-                        ))}
-                    </ul>
-                  </div>
-                </Disclosure.Panel>
               </div>
-            )}
+              <Disclosure.Panel className="mt-[64.4px]">
+                <div className="h-full">
+                  <ul
+                    style={{ zIndex: "5" }}
+                    className="w-full absolute overflow-y-auto flex flex-col"
+                  >
+                    {rooms
+                      .slice()
+                      .sort((a, b) => {
+                        // createdAtが存在し、Timestampオブジェクトであることを確認
+                        const aSeconds = a.createdAt?.seconds ?? 0;
+                        const bSeconds = b.createdAt?.seconds ?? 0;
+                        return bSeconds - aSeconds;
+                      })
+                      .map((room, index) => (
+                        <li
+                          style={{
+                            animationDelay: `${index * 0.1}s`, // 各liタグのアニメーション開始を遅延
+                          }}
+                          key={room.id}
+                          onClick={() => selectRoom(room.id, room.name)}
+                          className="bg-blue-500 text-center md:text-left cursor-pointer border-b p-4 text-slate-100 hover:bg-blue-500 duration-150 truncate fadeInUp"
+                        >
+                          {room.name}
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              </Disclosure.Panel>
+            </div>
             <div
-              className="flex-grow overflow-y-auto mb-4 px-3 mt-[75px] md:px-12"
+              className="flex-grow overflow-y-auto mb-4 px-3 mt-[64px] md:px-12"
               ref={scrollDiv}
             >
               {massages.map((message, index) => (
@@ -277,13 +284,11 @@ const Chat = () => {
                 placeholder="質問内容を入力してください"
                 onChange={handleInputChange}
                 value={input}
-                // onCompositionStart={() => setIsComposing(true)}
-                // onCompositionEnd={() => setIsComposing(false)}
                 onKeyDown={handleKeyDown}
               />
               <button
                 onClick={sendMessage}
-                className="h-fit absolute bottom-[1.1rem] right-10 md:bottom-[1.55rem] md:right-16 flex items-center"
+                className="h-fit absolute bottom-[0.9rem] right-10 md:bottom-[1.55rem] md:right-16 flex items-center"
               >
                 <FiSend style={{ marginBottom: "0.25rem" }} />
               </button>

@@ -2,7 +2,7 @@
 import { User, onAuthStateChanged } from "firebase/auth";
 import React, { ReactNode, createContext, useEffect, useState } from "react";
 import { auth } from "../../firebase";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 type AppProviderProps = {
   children: ReactNode;
@@ -31,28 +31,28 @@ const defaultContext = {
 export const AppContext = createContext<AppContextType>(defaultContext);
 
 export function AppProvider({ children }: AppProviderProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [selectedRoomName, setSelectedRoomName] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const unsubscribe = onAuthStateChanged(auth, (newUser) => {
-        setUser(newUser);
-        setUserId(newUser ? newUser.uid : null);
+    const unsubscribe = onAuthStateChanged(auth, (newUser) => {
+      setUser(newUser);
+      setUserId(newUser ? newUser.uid : null);
 
-        if (!newUser) {
+      if (typeof window !== "undefined") {
+        if (!newUser && pathname !== "/auth/login") {
           router.push("/auth/login");
         }
-      });
+      }
+    });
 
-      return () => {
-        unsubscribe();
-      };
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (
