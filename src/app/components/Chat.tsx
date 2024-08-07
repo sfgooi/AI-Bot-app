@@ -247,19 +247,20 @@ const Chat = () => {
                 </div>
               </Disclosure.Panel>
             </div>
-            <div
-              className="flex-grow overflow-y-auto mb-4 px-3 mt-[64px] md:px-12"
-              ref={scrollDiv}
-            >
-              {massages.map((message, index) => (
-                <div
-                  key={index}
-                  className={
-                    message.sender === "user" ? "text-right" : "text-left"
-                  }
-                >
+            <div className="flex flex-col flex-grow overflow-hidden">
+              <div
+                className="flex-grow overflow-y-auto mb-4 px-3 mt-[64px] md:px-12"
+                ref={scrollDiv}
+              >
+                {massages.map((message, index) => (
                   <div
-                    className={`
+                    key={index}
+                    className={
+                      message.sender === "user" ? "text-right" : "text-left"
+                    }
+                  >
+                    <div
+                      className={`
               max-w-[70vw]
               md:max-w-[50vw]
               ${
@@ -268,30 +269,31 @@ const Chat = () => {
                   : "break-words overflow-wrap whitespace-pre-line bg-green-500 inline-block rounded px-4 py-2 m-1"
               }
               `}
-                  >
-                    <p className="text-white">{message.text}</p>
+                    >
+                      <p className="text-white">{message.text}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-              {isLoading && (
-                <LoadingIcons.TailSpin width="50" stroke="#BDBDBD" />
-              )}
-            </div>
-            <div className="flex-shrink-0 relative px-6 pb-2 md:pb-4 md:px-12">
-              <Textarea
-                disabled={selectedRoom === null}
-                className="border-2 resize-none rounded w-full pr-10 fadeInUp duration-300 focus:outline-none p-2 disabled:bg-gray-400"
-                placeholder="質問内容を入力してください"
-                onChange={handleInputChange}
-                value={input}
-                onKeyDown={handleKeyDown}
-              />
-              <button
-                onClick={sendMessage}
-                className="h-fit absolute bottom-[0.9rem] right-10 md:bottom-[1.55rem] md:right-16 flex items-center"
-              >
-                <FiSend style={{ marginBottom: "0.25rem" }} />
-              </button>
+                ))}
+                {isLoading && (
+                  <LoadingIcons.TailSpin width="50" stroke="#BDBDBD" />
+                )}
+              </div>
+              <div className="flex-shrink-0 px-6 pb-2 md:pb-4 md:px-12">
+                <Textarea
+                  disabled={selectedRoom === null}
+                  className="border-2 resize-none rounded w-full pr-10 fadeInUp duration-300 focus:outline-none p-2 disabled:bg-gray-400"
+                  placeholder="質問内容を入力してください"
+                  onChange={handleInputChange}
+                  value={input}
+                  onKeyDown={handleKeyDown}
+                />
+                <button
+                  onClick={sendMessage}
+                  className="h-fit absolute bottom-[0.9rem] right-10 md:bottom-[1.55rem] md:right-16 flex items-center"
+                >
+                  <FiSend style={{ marginBottom: "0.25rem" }} />
+                </button>
+              </div>
             </div>
           </div>
         </>
